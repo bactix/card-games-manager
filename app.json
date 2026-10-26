@@ -16,7 +16,14 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ],
+      "package": "com.bactix.cardgamesmanager"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -24,7 +31,23 @@
     "scheme": "cardgamesmanager",
     "plugins": [
       "expo-router",
-      "expo-audio"
-    ]
+      "expo-audio",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F3F4EF"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "5f4f026f-1e55-47d2-98c1-626eabb73128"
+      }
+    }
   }
 }

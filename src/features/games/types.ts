@@ -1,35 +1,25 @@
-import type { ComponentType } from 'react';
+export type GameSymbolName = 'spade' | 'heart' | 'diamond' | 'club';
+export type EndMode = 'score' | 'rounds';
+export type WinnerRule = 'most' | 'least';
 
-export interface Participant {
+/** How a game is played: when it ends and who wins. */
+export interface GameRules {
+  endMode: EndMode;
+  /** Used when endMode is 'score': the game ends as soon as a player reaches it. */
+  targetScore: number;
+  /** Used when endMode is 'rounds': the game ends after this many rounds. */
+  rounds: number;
+  playerLimit: number;
+  /** Points every round must add up to across all players. 0 means no limit. */
+  roundTotal: number;
+  winner: WinnerRule;
+}
+
+/** A card game with its default rules. The rules can still be changed for a single match. */
+export interface Game {
   id: string;
   name: string;
-}
-
-export interface GameResult {
-  winnerId?: string;
-  scores: Record<string, number>;
-}
-
-export interface GameScreenProps<State, Action> {
-  state: State;
-  dispatch: (action: Action) => void;
-  /** True once the match is finished: show the result, accept no more input. */
-  readOnly: boolean;
-}
-
-/**
- * Everything the app needs to know about one card game. Each game keeps its
- * own State and Action shapes; the match feature stores the state as plain JSON.
- */
-export interface GameModule<State = unknown, Action = unknown> {
-  id: string;
-  name: string;
-  teamBased: boolean;
-  minParticipants: number;
-  maxParticipants?: number;
-  initialState(participants: Participant[]): State;
-  reduce(state: State, action: Action): State;
-  isFinished(state: State): boolean;
-  getResult(state: State): GameResult;
-  Screen: ComponentType<GameScreenProps<State, Action>>;
+  symbol: GameSymbolName;
+  color: string;
+  rules: GameRules;
 }

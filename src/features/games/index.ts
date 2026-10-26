@@ -1,3 +1,7 @@
 // Public API of the games feature. Other features import only from here.
-export { getGame, listGames } from './registry';
-export type { GameModule, GameResult, GameScreenProps, Participant } from './types';
+export { CreateGameScreen } from './components/CreateGameScreen';
+export { GameTile } from './components/GameTile';
+export { RulesEditor } from './components/RulesEditor';
+export { describeRules, rulesEqual, shortTarget } from './rules';
+export type { EndMode, Game, GameRules, GameSymbolName, WinnerRule } from './types';
+export { useGames } from './useGames';

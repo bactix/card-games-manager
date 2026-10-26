@@ -1,14 +1,21 @@
-import type { Participant } from '@/features/games';
+import type { GameRules } from '@/features/games';
 
+export interface MatchPlayer {
+  id: string;
+  name: string;
+  color: string;
+}
+
+/** One game being played. It keeps its own copy of the rules, so later edits to the game don't change it. */
 export interface Match {
   id: string;
-  gameTypeId: string;
-  gangId?: string;
-  participants: Participant[];
-  /** Owned by the game module; stored as plain JSON. */
-  state: unknown;
+  gameId: string;
+  gameName: string;
+  rules: GameRules;
+  players: MatchPlayer[];
+  /** rounds[r][p] = points player p scored in round r (same order as `players`). */
+  rounds: number[][];
   status: 'active' | 'finished';
-  winnerId?: string;
   /** True when the user ended the match before the game's own ending rule. */
   endedEarly?: boolean;
   createdAt: string; // ISO date

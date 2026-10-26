@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import type { Repository } from './repository';
 
-/** Loads a repository's list and keeps it in sync after every change. */
+/** Loads a repository's list, reloads it whenever the screen gains focus, and keeps it in sync after changes. */
 export function useRepositoryList<T extends { id: string }>(repository: Repository<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -11,9 +12,11 @@ export function useRepositoryList<T extends { id: string }>(repository: Reposito
     setLoading(false);
   }, [repository]);
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+  useFocusEffect(
+    useCallback(() => {
+      void refresh();
+    }, [refresh]),
+  );
 
   const add = async (item: T) => {
     setItems((prev) => [...prev, item]);

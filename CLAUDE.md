@@ -21,17 +21,18 @@ src/
 - `components/` – UI used only by this feature.
 - `index.ts` – the public API of the feature (types and hooks). Features with no data layer skip the repository files.
 
-### New card game (`src/features/games/<game>/`)
-- Implement `GameModule` from `features/games/types.ts` and export it from `<game>/index.ts`.
-- A game with its own flow has `rules.ts` (pure functions: `initialState`, `reduce`, `isFinished`, `getResult`, no UI imports) and `Screen.tsx` (its match UI).
-- Games scored round by round can use `createRoundScoreGame` from `games/shared/`.
-- Register the game in `games/registry.ts`. Nothing else in the app changes.
-- Ending a match early is handled for every game by `MatchScreen` (`features/matches`), using the game's `getResult`. Games must not implement their own "end match" button, and their `Screen` must handle `readOnly` when the match was ended before `isFinished` is true.
+### Card games
+Games are data, not code: a `Game` (name, suit symbol, colour and default `GameRules`) stored by the `games` feature. Adding a game never needs a new folder; users create them in the app.
+- Rules (`GameRules`): how the game ends (target score or set rounds), number of players and whether most or least points wins.
+- A match (`features/matches`) keeps its own copy of the rules, so editing a game later never changes a game in progress.
+- Scoring is pure and lives in `matches/scoring.ts`; screens never compute totals or winners themselves.
+- A game that needs its own flow (not points per round) should get its own folder under `features/games/<game>/` with pure `rules.ts` and its own `Screen.tsx`, and the match screen should render it instead of the points table. Do not fork the scoreboard for it.
+- Ending a match early is a match feature (`ScoreboardScreen` → game options); the leader under the rules wins.
 - Match state is plain JSON so it can be stored locally or sent to an API.
 
 ### Rules
 1. `app/` contains routes only. Logic and UI live in `features/`.
 2. A feature imports another feature only through that feature's `index.ts`, never its internal files.
 3. Screens and hooks use `repository.ts`; they never import `.local` or `.api` files directly.
-4. `lib/` and `components/` never import from `features/`.
+4. `lib/` and `components/` never import from `features/`. Shared UI used by more than one feature goes in `components/`; colours and fonts come from `lib/theme.ts`.
 5. Add packages with `npx expo install <package>`.
