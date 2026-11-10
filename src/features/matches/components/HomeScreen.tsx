@@ -1,22 +1,25 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Icon } from '@/components/Icon';
+import { ReorderableGrid } from '@/components/ReorderableGrid';
 import { Screen } from '@/components/Screen';
-import { GameTile, shortTarget, useGames } from '@/features/games';
+import { GameTile, useGames } from '@/features/games';
 import { colors, fonts } from '@/lib/theme';
 import { progress } from '../scoring';
 import { useMatches } from '../useMatches';
 
 export function HomeScreen() {
   const { items: matches } = useMatches();
-  const { items: games } = useGames();
+  const { items: games, reorder } = useGames();
+  const [dragging, setDragging] = useState(false); // stops the page scrolling while a tile is moved
 
   const current = [...matches].reverse().find((m) => m.status === 'active');
   const bar = current && progress(current);
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView contentContainerStyle={styles.body} scrollEnabled={!dragging}>
         <Text style={styles.title}>Home</Text>
 
         {current && bar && (
@@ -58,18 +61,26 @@ export function HomeScreen() {
             <Text style={styles.empty}>No games yet. Create one in the Games tab.</Text>
           ) : (
             <View style={styles.tiles}>
-              {games.slice(0, 3).map((game) => (
-                <Pressable
-                  key={game.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Start ${game.name}`}
-                  onPress={() => router.push({ pathname: '/match/new', params: { gameId: game.id } })}
-                  style={styles.tileWrap}
-                >
-                  <GameTile name={game.name} color={game.color} symbol={game.symbol} />
-                  <Text style={styles.tileCaption}>{shortTarget(game.rules)}</Text>
-                </Pressable>
-              ))}
+              <ReorderableGrid
+                data={games}
+                keyExtractor={(g) => g.id}
+                itemWidth={96}
+                itemHeight={96}
+                columns={3}
+                onReorder={(next) => void reorder(next)}
+                onDragStateChange={setDragging}
+                renderItem={(game, { drag }) => (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Start ${game.name}. Hold and drag to move.`}
+                    delayLongPress={250}
+                    onLongPress={drag}
+                    onPress={() => router.push({ pathname: '/match/new', params: { gameId: game.id } })}
+                  >
+                    <GameTile name={game.name} color={game.color} symbol={game.symbol} />
+                  </Pressable>
+                )}
+              />
             </View>
           )}
         </View>
@@ -110,8 +121,6 @@ const styles = StyleSheet.create({
   section: { gap: 12 },
   sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   sectionTitle: { fontFamily: fonts.displayBold, fontSize: 18, color: colors.ink },
-  tiles: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 4 },
-  tileWrap: { alignItems: 'center', gap: 8, width: 96 },
-  tileCaption: { fontFamily: fonts.body, fontSize: 12, color: colors.muted },
+  tiles: { paddingTop: 4 },
   empty: { fontFamily: fonts.body, color: colors.muted },
 });

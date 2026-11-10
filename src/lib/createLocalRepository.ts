@@ -20,6 +20,9 @@ export function createLocalRepository<T extends { id: string }>(
       const items = await read();
       await saveList(key, items.map((i) => (i.id === item.id ? item : i)));
     },
+    async replaceAll(items) {
+      await saveList(key, items);
+    },
     async remove(id) {
       const items = await read();
       await saveList(key, items.filter((i) => i.id !== id));

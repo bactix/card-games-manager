@@ -53,7 +53,7 @@ export function ScoreboardScreen({ matchId }: { matchId: string }) {
       'Every round is erased and all scores go back to 0. The players and rules stay the same.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Reset game', style: 'destructive', onPress: () => void update({ ...match, rounds: [] }) },
+        { text: 'Reset game', style: 'destructive', onPress: () => void update({ ...match, rounds: [], bids: undefined }) },
       ],
     );
 
@@ -122,6 +122,12 @@ export function ScoreboardScreen({ matchId }: { matchId: string }) {
             ))}
           </View>
         </View>
+        {match.bids && (
+          <Text style={styles.bidsLine}>
+            Round {match.rounds.length + 1} bids:{' '}
+            {match.players.map((p, i) => `${p.name} ${match.bids?.[i]}`).join(' · ')}
+          </Text>
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -144,8 +150,14 @@ export function ScoreboardScreen({ matchId }: { matchId: string }) {
         />
         <View style={styles.addWrap}>
           <PrimaryButton
-            label={`Add round ${match.rounds.length + 1}`}
-            icon="plus"
+            label={
+              match.rules.bids?.length
+                ? match.bids
+                  ? `End round ${match.rounds.length + 1}`
+                  : `Start round ${match.rounds.length + 1}`
+                : `Add round ${match.rounds.length + 1}`
+            }
+            icon={match.bids ? 'check' : 'plus'}
             iconPosition="left"
             onPress={() => router.push(`/match/${match.id}/round`)}
           />
@@ -186,6 +198,7 @@ const styles = StyleSheet.create({
   totalRow: { height: 52, borderTopWidth: 2, borderTopColor: colors.ink, backgroundColor: colors.bg },
   totalLabel: { fontFamily: fonts.displayBold, fontSize: 13, color: colors.ink },
   total: { fontFamily: fonts.displayHeavy, fontSize: 19, color: colors.ink },
+  bidsLine: { fontFamily: fonts.semibold, fontSize: 13, color: colors.ink, paddingTop: 12 },
   footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
   addWrap: { flex: 1 },
 });

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Segmented } from '@/components/Segmented';
 import { Stepper } from '@/components/Stepper';
 import { colors, fonts } from '@/lib/theme';
-import type { EndMode, GameRules, WinnerRule } from '../types';
+import type { EndMode, GameRules } from '../types';
 
 interface Props {
   rules: GameRules;
@@ -44,32 +44,56 @@ export function RulesEditor({ rules, onChange, buttonBackground }: Props) {
         />
       )}
       <Stepper
-        label="Points per round (0 = no limit)"
+        label="Points per round, shared by all (0 = no limit)"
         value={rules.roundTotal ?? 0}
         min={0}
         onChange={(roundTotal) => set({ roundTotal })}
         buttonBackground={buttonBackground}
       />
-      <Stepper
-        label="Number of players"
-        value={rules.playerLimit}
-        min={2}
-        max={10}
-        editable={false}
-        onChange={(playerLimit) => set({ playerLimit })}
-        buttonBackground={buttonBackground}
-      />
-      <View style={styles.field}>
-        <Text style={styles.label}>Winner has</Text>
-        <Segmented<WinnerRule>
-          value={rules.winner}
-          onChange={(winner) => set({ winner })}
-          options={[
-            { label: 'Most points', value: 'most' },
-            { label: 'Least points', value: 'least' },
-          ]}
+      {rules.maxPerPlayer !== undefined && (
+        <Stepper
+          label="Max points per player in a round (0 = no max)"
+          value={rules.maxPerPlayer}
+          min={0}
+          step={10}
+          onChange={(maxPerPlayer) => set({ maxPerPlayer })}
+          buttonBackground={buttonBackground}
         />
-      </View>
+      )}
+      {rules.resetScore !== undefined && (
+        <>
+          <View style={styles.field}>
+            <Text style={styles.label}>Reset score</Text>
+            <Segmented<'off' | 'on'>
+              value={rules.resetScore ? 'on' : 'off'}
+              onChange={(v) => set({ resetScore: v === 'on' })}
+              options={[
+                { label: 'Off', value: 'off' },
+                { label: 'On', value: 'on' },
+              ]}
+            />
+          </View>
+          {rules.resetScore && (
+            <Stepper
+              label="Next round starts from 0 after finishing on exactly (points)"
+              value={rules.resetAt ?? 100}
+              onChange={(resetAt) => set({ resetAt })}
+              buttonBackground={buttonBackground}
+            />
+          )}
+        </>
+      )}
+      {!rules.playersFixed && (
+        <Stepper
+          label="Number of players"
+          value={rules.playerLimit}
+          min={2}
+          max={10}
+          editable={false}
+          onChange={(playerLimit) => set({ playerLimit })}
+          buttonBackground={buttonBackground}
+        />
+      )}
     </View>
   );
 }

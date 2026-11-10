@@ -16,7 +16,10 @@ export type IconName =
   | 'undo'
   | 'play'
   | 'trophy'
-  | 'refresh';
+  | 'refresh'
+  | 'target'
+  | 'layers'
+  | 'sum';
 
 interface Props {
   name: IconName;
@@ -90,6 +93,23 @@ function Shapes({ name, color }: { name: IconName; color: ColorValue }) {
           <Path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
         </>
       );
+    case 'target':
+      return (
+        <>
+          <Circle cx="12" cy="12" r="9" />
+          <Circle cx="12" cy="12" r="5" />
+          <Circle cx="12" cy="12" r="1.2" fill={color} />
+        </>
+      );
+    case 'layers':
+      return (
+        <>
+          <Path d="M12 3l9 5-9 5-9-5 9-5z" />
+          <Path d="M3 13l9 5 9-5" />
+        </>
+      );
+    case 'sum':
+      return <Path d="M18 5H6l6 7-6 7h12" />;
     case 'refresh':
       return (
         <>

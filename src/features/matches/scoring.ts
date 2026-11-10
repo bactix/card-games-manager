@@ -2,8 +2,24 @@ import type { Match } from './types';
 
 type Scored = Pick<Match, 'rules' | 'players' | 'rounds'>;
 
+/** True when "reset score" is on and a player finished a round on exactly the reset score. */
+export function resetsToZero(rules: Scored['rules'], total: number): boolean {
+  return !!rules.resetScore && total === (rules.resetAt ?? 100);
+}
+
+/** The score a player starts the next round from: 0 if they finished the last round on the reset score. */
+export function startOfNextRound(rules: Scored['rules'], total: number): number {
+  return resetsToZero(rules, total) ? 0 : total;
+}
+
+/**
+ * Running totals. With "reset score" on, a player who finishes a round on exactly the reset score
+ * keeps that total on the board, then starts the next round from 0.
+ */
 export function totals(match: Scored): number[] {
-  return match.players.map((_, p) => match.rounds.reduce((sum, round) => sum + (round[p] ?? 0), 0));
+  return match.players.map((_, p) =>
+    match.rounds.reduce((sum, round) => startOfNextRound(match.rules, sum) + (round[p] ?? 0), 0),
+  );
 }
 
 /** The game's own ending rule: someone reached the target, or the last round was played. */

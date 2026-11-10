@@ -7,4 +7,6 @@ export interface Repository<T extends { id: string }> {
   add(item: T): Promise<void>;
   update(item: T): Promise<void>;
   remove(id: string): Promise<void>;
+  /** Saves the whole list in the given order. */
+  replaceAll(items: T[]): Promise<void>;
 }

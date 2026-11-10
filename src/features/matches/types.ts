@@ -16,6 +16,8 @@ export interface Match {
   /** rounds[r][p] = points player p scored in round r (same order as `players`). */
   rounds: number[][];
   status: 'active' | 'finished';
+  /** Games with bids: the bids locked in for the round being played (same order as `players`). */
+  bids?: number[];
   /** True when the user ended the match before the game's own ending rule. */
   endedEarly?: boolean;
   createdAt: string; // ISO date

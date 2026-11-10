@@ -6,12 +6,13 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { Screen } from '@/components/Screen';
 import { newId } from '@/lib/id';
 import { colors, fonts } from '@/lib/theme';
-import { DEFAULT_RULES, describeRules } from '../rules';
+import { DEFAULT_RULES } from '../rules';
 import type { GameRules, GameSymbolName } from '../types';
 import { useGames } from '../useGames';
 import { GAME_SYMBOLS, GameSymbol } from './GameSymbol';
 import { GameTile } from './GameTile';
 import { RulesEditor } from './RulesEditor';
+import { RulesInfographic } from './RulesInfographic';
 
 const TILE_COLORS = [
   { value: '#8E1B2E', label: 'Crimson' },
@@ -105,7 +106,7 @@ export function CreateGameScreen() {
           <Text style={styles.label}>Rules</Text>
           <View style={styles.rules}>
             <RulesEditor rules={rules} onChange={setRules} />
-            <Text style={styles.summary}>{describeRules(rules)}</Text>
+            <RulesInfographic rules={rules} />
           </View>
         </View>
       </ScrollView>
@@ -149,15 +150,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     gap: 16,
-  },
-  summary: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    lineHeight: 19,
-    color: colors.muted,
-    backgroundColor: colors.bg,
-    borderRadius: 12,
-    padding: 12,
   },
   footer: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
 });

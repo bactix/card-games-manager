@@ -33,5 +33,10 @@ export function useRepositoryList<T extends { id: string }>(repository: Reposito
     await repository.remove(id);
   };
 
-  return { items, loading, add, update, remove, refresh };
+  const reorder = async (next: T[]) => {
+    setItems(next);
+    await repository.replaceAll(next);
+  };
+
+  return { items, loading, add, update, remove, reorder, refresh };
 }
