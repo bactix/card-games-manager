@@ -60,6 +60,21 @@ export function RulesEditor({ rules, onChange, buttonBackground }: Props) {
           buttonBackground={buttonBackground}
         />
       )}
+      {rules.takeAllBonus !== undefined && rules.roundTotal > 0 && (
+        <View style={styles.field}>
+          <Text style={styles.label}>
+            Extra point for taking all {rules.roundTotal} ({rules.roundTotal + 1})
+          </Text>
+          <Segmented<'off' | 'on'>
+            value={rules.takeAllBonus ? 'on' : 'off'}
+            onChange={(v) => set({ takeAllBonus: v === 'on' })}
+            options={[
+              { label: 'Off', value: 'off' },
+              { label: 'On', value: 'on' },
+            ]}
+          />
+        </View>
+      )}
       {rules.resetScore !== undefined && (
         <>
           <View style={styles.field}>

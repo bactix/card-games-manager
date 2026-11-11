@@ -9,6 +9,7 @@ import { useGames } from '@/features/games';
 import { colors, fonts } from '@/lib/theme';
 import { reachedEnd, resetsToZero, startOfNextRound, totals } from '../scoring';
 import { useMatches } from '../useMatches';
+import { BadMoveSound } from './BadMoveSound';
 import { BidsRoundScreen } from './BidsRoundScreen';
 import { PenaltyCardButton, RestCardButton, ScoreCardButton } from './ScoreCardButton';
 
@@ -51,6 +52,14 @@ function PointsRoundScreen({ matchId }: { matchId: string }) {
   const typedPoints = (player: number) => parseInt(values[player] ?? '0', 10) || 0;
   const valueOf = (player: number) =>
     customNeg === player ? -typedPoints(player) : (penalty[player] ?? typedPoints(player) + cardPoints(player));
+  // Games with the "take all the points" bonus: whoever takes the whole round total gets 1 extra point.
+  const takeAllBonus = match.rules.takeAllBonus ?? game?.rules.takeAllBonus ?? false;
+  const bonusOf = (player: number) => (takeAllBonus && limit > 0 && valueOf(player) === limit ? 1 : 0);
+  const scored = (player: number) => valueOf(player) + bonusOf(player);
+  // A bad move (in Likha: taking the whole round) plays the bad move sound as soon as it happens.
+  const badMoveRule = match.rules.badMoveTakesAll ?? game?.rules.badMoveTakesAll ?? false;
+  const takesAll = (player: number) => badMoveRule && limit > 0 && valueOf(player) === limit;
+  const badMoveNow = match.players.some((_, i) => takesAll(i));
   const holdsNegative = (player: number) => penalty[player] !== undefined || customNeg === player;
 
   // Gives the penalty to one player (taking it from whoever had it); tapping it again takes it off.
@@ -187,7 +196,7 @@ function PointsRoundScreen({ matchId }: { matchId: string }) {
 
   const save = async () => {
     if (!canSave) return;
-    const round = match.players.map((_, i) => valueOf(i));
+    const round = match.players.map((_, i) => scored(i));
     const rounds = [...match.rounds, round];
     const finished = reachedEnd({ ...match, rounds });
     await update({ ...match, rounds, status: finished ? 'finished' : 'active' });
@@ -197,6 +206,7 @@ function PointsRoundScreen({ matchId }: { matchId: string }) {
 
   return (
     <Screen bottomInset>
+      <BadMoveSound active={badMoveNow} />
       <View style={styles.header}>
         <IconButton icon="close" label="Cancel" onPress={() => router.back()} />
         <View style={styles.headerText}>
@@ -216,7 +226,7 @@ function PointsRoundScreen({ matchId }: { matchId: string }) {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.rows}>
         {match.players.map((p, i) => {
           const on = active === i;
-          const v = valueOf(i);
+          const v = scored(i);
           return (
             <Pressable
               key={p.id}
@@ -235,6 +245,7 @@ function PointsRoundScreen({ matchId }: { matchId: string }) {
                   <Text style={styles.next} numberOfLines={1}>
                     {sums[i]} → {startOfNextRound(match.rules, sums[i]) + v}
                     {resetsToZero(match.rules, sums[i]) ? ' (starts from 0)' : ''}
+                    {bonusOf(i) > 0 ? ' · +1 for taking all' : ''}
                   </Text>
                 </View>
                 {(cards || limit > 0 || penalties) && (

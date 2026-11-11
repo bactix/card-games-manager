@@ -38,6 +38,12 @@ function rowsFor(r: GameRules): Row[] {
       value: `${Math.min(...r.bids)}–${Math.max(...r.bids)}`,
     });
   }
+  if (r.takeAllBonus && r.roundTotal > 0) {
+    rows.push({ icon: 'plus', label: `Taking all ${r.roundTotal} points counts as`, value: String(r.roundTotal + 1) });
+  }
+  if (r.badMoveTakesAll && r.roundTotal > 0) {
+    rows.push({ icon: 'close', label: 'Bad move', value: `All ${r.roundTotal}` });
+  }
   if (r.resetScore) {
     rows.push({ icon: 'refresh', label: 'Next round starts from 0 after', value: `${r.resetAt ?? 100} pts` });
   }

@@ -17,6 +17,8 @@ export function rulesEqual(a: GameRules, b: GameRules): boolean {
     a.playerLimit === b.playerLimit &&
     a.roundTotal === b.roundTotal &&
     a.maxPerPlayer === b.maxPerPlayer &&
+    a.takeAllBonus === b.takeAllBonus &&
+    a.badMoveTakesAll === b.badMoveTakesAll &&
     a.resetScore === b.resetScore &&
     a.resetAt === b.resetAt &&
     a.winner === b.winner
@@ -40,8 +42,14 @@ export function describeRules(r: GameRules): string {
   const bids = r.bids?.length
     ? ` Every round starts with each player locking in a bid (${r.bids.join(', ')}). If they make it the bid is added to their score, if not it is taken off.`
     : '';
+  const takeAll =
+    r.takeAllBonus && r.roundTotal > 0
+      ? ` A player who takes all ${r.roundTotal} points in a round gets 1 extra point (${r.roundTotal + 1}).`
+      : '';
+  const badMove =
+    r.badMoveTakesAll && r.roundTotal > 0 ? ` Taking all ${r.roundTotal} points in a round is a bad move.` : '';
   const reset = r.resetScore ? ` A player who finishes a round on exactly ${r.resetAt ?? 100} starts the next round from 0.` : '';
-  return `${r.playerLimit} players. ${ending}${perRound}${maxEach}${penalty}${bids}${reset} ${winnerText(r)} points wins.`;
+  return `${r.playerLimit} players. ${ending}${perRound}${maxEach}${penalty}${bids}${takeAll}${badMove}${reset} ${winnerText(r)} points wins.`;
 }
 
 /** Short caption under a game tile, e.g. "First to 41" or "5 rounds". */

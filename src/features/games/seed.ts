@@ -4,7 +4,7 @@ import type { Game } from './types';
  * Bump this whenever the default rules below change. Phones that saved an older copy of a built-in
  * game (for example after reordering the tiles) get the new default rules the next time the app opens.
  */
-export const SEED_VERSION = 9;
+export const SEED_VERSION = 12;
 
 /** Games available on first launch. They are ordinary games: edit them or add more. */
 export const SEED_GAMES: Game[] = [
@@ -21,6 +21,8 @@ export const SEED_GAMES: Game[] = [
       playerLimit: 4,
       playersFixed: true,
       roundTotal: 36,
+      takeAllBonus: true,
+      badMoveTakesAll: true,
       resetScore: false,
       resetAt: 100,
       winner: 'least',

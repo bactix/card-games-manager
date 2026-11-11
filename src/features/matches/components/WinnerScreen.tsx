@@ -9,6 +9,7 @@ import { newId } from '@/lib/id';
 import { colors, fonts } from '@/lib/theme';
 import { biggestRound, ranking, totals } from '../scoring';
 import { useMatches } from '../useMatches';
+import { Podium } from './Podium';
 
 export function WinnerScreen({ matchId }: { matchId: string }) {
   const { items, loading, add } = useMatches();
@@ -30,6 +31,10 @@ export function WinnerScreen({ matchId }: { matchId: string }) {
   const points = sums[order[0]];
   const roundsPlayed = match.rounds.length;
   const best = biggestRound(match);
+  // the player in last place carries the title "Bandar"
+  const lastIndex = order[order.length - 1];
+  const bandar = match.players[lastIndex];
+  const podium = order.map((i) => ({ name: match.players[i].name, color: match.players[i].color, score: sums[i] }));
 
   const reason = match.endedEarly
     ? `${points} points · ended early after ${roundsPlayed} ${roundsPlayed === 1 ? 'round' : 'rounds'}`
@@ -55,6 +60,19 @@ export function WinnerScreen({ matchId }: { matchId: string }) {
           <Text style={styles.headline}>{winner.name} wins!</Text>
           <Text style={styles.reason}>{reason}</Text>
         </View>
+
+        <Podium entries={podium} />
+
+        {order.length > 1 && (
+          <View style={styles.bandar}>
+            <Avatar name={bandar.name} color={bandar.color} size={44} />
+            <View style={styles.bandarText}>
+              <Text style={styles.bandarTitle}>Bandar</Text>
+              <Text style={styles.bandarName}>{bandar.name}</Text>
+            </View>
+            <Text style={styles.bandarScore}>{sums[lastIndex]}</Text>
+          </View>
+        )}
 
         <View style={styles.stats}>
           <View style={styles.stat}>
@@ -120,6 +138,21 @@ const styles = StyleSheet.create({
   kicker: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: colors.accent },
   headline: { fontFamily: fonts.displayHeavy, fontSize: 48, lineHeight: 50, letterSpacing: -1.4, color: '#FFFFFF', textAlign: 'center' },
   reason: { fontFamily: fonts.body, fontSize: 15, color: colors.darkMuted, textAlign: 'center' },
+  bandar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.danger,
+    backgroundColor: colors.darkCard,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  bandarText: { flex: 1, gap: 2 },
+  bandarTitle: { fontFamily: fonts.displayHeavy, fontSize: 24, letterSpacing: -0.4, color: '#FF8A7A' },
+  bandarName: { fontFamily: fonts.semibold, fontSize: 15, color: '#FFFFFF' },
+  bandarScore: { fontFamily: fonts.displayHeavy, fontSize: 22, color: '#FFFFFF' },
   stats: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, borderRadius: 18, backgroundColor: colors.darkCard, paddingVertical: 14, paddingHorizontal: 16, gap: 4 },
   statLabel: { fontFamily: fonts.body, fontSize: 12, color: colors.darkMuted },

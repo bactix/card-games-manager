@@ -199,6 +199,6 @@ const styles = StyleSheet.create({
   totalLabel: { fontFamily: fonts.displayBold, fontSize: 13, color: colors.ink },
   total: { fontFamily: fonts.displayHeavy, fontSize: 19, color: colors.ink },
   bidsLine: { fontFamily: fonts.semibold, fontSize: 13, color: colors.ink, paddingTop: 12 },
-  footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
+  footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
   addWrap: { flex: 1 },
 });

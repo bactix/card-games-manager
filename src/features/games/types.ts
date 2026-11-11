@@ -35,6 +35,13 @@ export interface GameRules {
    */
   resetScore?: boolean;
   resetAt?: number;
+  /**
+   * Optional bonus, only offered by games that define it. When on, a player who takes every point of a
+   * round (all of `roundTotal`) gets 1 extra point, so the round counts as roundTotal + 1.
+   */
+  takeAllBonus?: boolean;
+  /** A bad move is taking every point of a round (all of `roundTotal`). The bad move sound plays when it happens. */
+  badMoveTakesAll?: boolean;
   /** Points every round adds up to across all players, shared out between them. 0 means no limit. */
   roundTotal: number;
   /** Most points any one player can score in a single round (not combined). 0 or unset means no maximum. */
